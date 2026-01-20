@@ -78,9 +78,10 @@ export class SentimentAnalyzer {
     const confidence = Math.min(magnitude * 2, 1);
 
     let label: 'positive' | 'negative' | 'neutral';
-    if (score > this.options.threshold!) {
+    const threshold = this.options.threshold || 0.1;
+    if (score > threshold) {
       label = 'positive';
-    } else if (score < -this.options.threshold!) {
+    } else if (score < -threshold) {
       label = 'negative';
     } else {
       label = 'neutral';
