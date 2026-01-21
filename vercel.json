@@ -12,9 +12,6 @@
       "dest": "/api/index.ts"
     }
   ],
-  "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api/index.ts" }
-  ],
   "headers": [
     {
       "source": "/assets/(.*)",

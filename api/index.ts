@@ -290,7 +290,8 @@ process.on('SIGINT', gracefulShutdown);
 process.on('SIGTERM', gracefulShutdown);
 
 // Only start if this file is run directly
-if (import.meta.url === `file://${process.argv[1]}`) {
+const isMainModule = process.argv[1] && import.meta.url.endsWith(process.argv[1]);
+if (isMainModule) {
   start();
 }
 
