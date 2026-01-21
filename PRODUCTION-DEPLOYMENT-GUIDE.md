@@ -18,7 +18,6 @@ Comprehensive guide for deploying Ticru.io to production environments.
 ### Required Software
 
 - **Node.js** 18+ 
-- **Python** 3.9+
 - **PostgreSQL** 14+
 - **Git**
 - **Vercel CLI** or **Netlify CLI**
@@ -43,9 +42,6 @@ cd ticru.io
 ```bash
 # Install npm dependencies
 npm install
-
-# Install Python dependencies
-pip install -r requirements.txt
 ```
 
 ### 3. Configure Environment Variables
@@ -60,15 +56,14 @@ NODE_ENV=production
 
 # API Configuration
 VITE_API_URL=https://api.ticru.io
-API_HOST=0.0.0.0
-API_PORT=8000
+HOST=0.0.0.0
+PORT=8000
+LOG_LEVEL=info
 
 # Database
 DATABASE_URL=postgresql://user:password@host:5432/ticru_db
 
 # Security
-SECRET_KEY=your-secret-key-here
-JWT_SECRET=your-jwt-secret-here
 ALLOWED_ORIGINS=https://ticru.io,https://www.ticru.io
 
 # Third-party Services
@@ -91,7 +86,7 @@ CREATE DATABASE ticru_db;
 
 ```bash
 # Using CLI
-python3 ticru-cli.py init-db
+node ticru-cli.js init-db
 
 # Or directly with psql
 psql $DATABASE_URL -f BUILD-DATABASE.sql
@@ -179,16 +174,22 @@ netlify deploy --prod --dir=dist
 
 ## Backend Deployment
 
-### Option 1: Vercel Serverless Functions
+### Option 1: Vercel Serverless Functions (Recommended for Node.js)
 
-Create `api/index.py`:
+The `api/index.ts` file is already configured for Vercel serverless deployment.
 
-```python
-from api-server import app
+Configure in `vercel.json`:
+```json
+{
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/index" }
+  ]
+}
+```
 
-# Vercel serverless function handler
-def handler(request):
-    return app(request)
+Deploy with:
+```bash
+vercel --prod
 ```
 
 ### Option 2: Dedicated Server (e.g., DigitalOcean, AWS EC2)
@@ -202,44 +203,55 @@ ssh user@your-server-ip
 # Update system
 sudo apt update && sudo apt upgrade -y
 
-# Install dependencies
-sudo apt install python3-pip postgresql nginx -y
+# Install Node.js 18+
+curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+sudo apt install nodejs -y
+
+# Install PostgreSQL and Nginx
+sudo apt install postgresql nginx -y
 
 # Clone repository
 git clone https://github.com/SOJIB-AHMMED/ticru.io.git
 cd ticru.io
 
-# Install Python dependencies
-pip3 install -r requirements.txt
+# Install dependencies
+npm install
 ```
 
-#### 2. Configure Systemd Service
-
-Create `/etc/systemd/system/ticru-api.service`:
-
-```ini
-[Unit]
-Description=Ticru.io API Server
-After=network.target
-
-[Service]
-Type=simple
-User=www-data
-WorkingDirectory=/var/www/ticru.io
-Environment="PATH=/usr/local/bin"
-ExecStart=/usr/bin/python3 api-server.py
-Restart=always
-
-[Install]
-WantedBy=multi-user.target
-```
-
-Enable and start:
+#### 2. Build Application
 
 ```bash
-sudo systemctl enable ticru-api
-sudo systemctl start ticru-api
-sudo systemctl status ticru-api
+# Build frontend and backend
+npm run build
+```
+
+#### 3. Configure PM2 (Process Manager)
+
+```bash
+# Install PM2
+npm install -g pm2
+
+# Create ecosystem config
+cat > ecosystem.config.js << 'EOF'
+module.exports = {
+  apps: [{
+    name: 'ticru-api',
+    script: 'api/server.ts',
+    interpreter: 'node',
+    interpreter_args: '--loader tsx',
+    env: {
+      NODE_ENV: 'production',
+      PORT: 8000,
+      HOST: '0.0.0.0'
+    }
+  }]
+}
+EOF
+
+# Start with PM2
+pm2 start ecosystem.config.js
+pm2 save
+pm2 startup
 ```
 
 #### 3. Configure Nginx Reverse Proxy
@@ -281,16 +293,27 @@ sudo certbot --nginx -d api.ticru.io
 Create `Dockerfile`:
 
 ```dockerfile
-FROM python:3.11-slim
+FROM node:18-slim
 
 WORKDIR /app
 
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# Copy package files
+COPY package*.json ./
 
+# Install dependencies
+RUN npm ci --only=production
+
+# Copy application files
 COPY . .
 
-CMD ["uvicorn", "api-server:app", "--host", "0.0.0.0", "--port", "8000"]
+# Build TypeScript
+RUN npm run build
+
+# Expose port
+EXPOSE 8000
+
+# Start API server
+CMD ["npm", "run", "api:start"]
 ```
 
 Build and run:
@@ -373,11 +396,10 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO ticru_app
 ```bash
 # Update dependencies regularly
 npm update
-pip install --upgrade -r requirements.txt
 
 # Check for security vulnerabilities
 npm audit
-pip-audit
+npm audit fix
 ```
 
 ## Scaling Strategies

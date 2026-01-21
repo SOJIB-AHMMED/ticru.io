@@ -1,11 +1,16 @@
-fastapi==0.109.2
-uvicorn[standard]==0.24.0
-pydantic==2.5.0
-pydantic[email]==2.5.0
-psycopg2-binary==2.9.9
-sqlalchemy==2.0.23
-python-dotenv==1.0.0
-python-multipart==0.0.18
-passlib[bcrypt]==1.7.4
-python-jose[cryptography]==3.4.0
-click==8.1.6
+# DEPRECATED - This file is no longer used
+# The backend has been converted to Node.js/Fastify
+# See package.json for Node.js dependencies
+
+# Legacy Python dependencies (for reference only):
+# fastapi==0.109.2
+# uvicorn[standard]==0.24.0
+# pydantic==2.5.0
+# pydantic[email]==2.5.0
+# psycopg2-binary==2.9.9
+# sqlalchemy==2.0.23
+# python-dotenv==1.0.0
+# python-multipart==0.0.18
+# passlib[bcrypt]==1.7.4
+# python-jose[cryptography]==3.4.0
+# click==8.1.6
