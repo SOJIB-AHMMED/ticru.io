@@ -207,7 +207,7 @@ function generateBuildInfo() {
   }
   
   if (existsSync('dist')) {
-    const fs = await import('fs');
+    const fs = require('fs');
     fs.writeFileSync('dist/build-info.json', JSON.stringify(buildInfo, null, 2));
     printSuccess('Build info generated: dist/build-info.json');
   }
@@ -279,7 +279,7 @@ async function main() {
   if (args.build || runAll) {
     success = success && buildFrontend();
     if (success) {
-      success = success && await generateBuildInfo();
+      success = success && generateBuildInfo();
     }
   }
   
