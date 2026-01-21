@@ -3,12 +3,17 @@
   "version": "1.0.0",
   "description": "Modern web application with TypeScript and React",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "api:dev": "tsx --watch api/server.ts",
+    "api:start": "node --loader tsx api/server.ts",
+    "cli": "node ticru-cli.js",
+    "build:system": "node build-system.js"
   },
   "keywords": [
     "ticru",
@@ -19,10 +24,19 @@
   "author": "SOJIB-AHMMED",
   "license": "MIT",
   "dependencies": {
+    "@fastify/cors": "^9.0.1",
+    "@fastify/formbody": "^7.4.0",
+    "commander": "^11.1.0",
+    "dotenv": "^16.3.1",
+    "fastify": "^4.25.2",
+    "pg": "^8.11.3",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@types/node": "^20.10.6",
+    "@types/pg": "^8.10.9",
     "@types/react": "^18.2.43",
     "@types/react-dom": "^18.2.17",
     "@typescript-eslint/eslint-plugin": "^6.14.0",
@@ -31,6 +45,8 @@
     "eslint": "^8.55.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.5",
+    "pino-pretty": "^13.1.3",
+    "tsx": "^4.7.0",
     "typescript": "^5.2.2",
     "vite": "^5.0.8"
   }
