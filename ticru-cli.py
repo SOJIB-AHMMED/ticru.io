@@ -75,29 +75,32 @@ def run(frontend_port, backend_port, backend_host):
         click.echo("\n\n🛑 Shutting down servers...")
         backend_process.terminate()
         frontend_process.terminate()
+        
+        # Wait for graceful termination
         backend_process.join(timeout=5)
         frontend_process.join(timeout=5)
+        
+        # Force kill if still alive
+        if backend_process.is_alive():
+            backend_process.kill()
+            backend_process.join()
+        if frontend_process.is_alive():
+            frontend_process.kill()
+            frontend_process.join()
+            
         click.echo("✅ Servers stopped")
         sys.exit(0)
     
     signal.signal(signal.SIGINT, signal_handler)
     signal.signal(signal.SIGTERM, signal_handler)
     
-    try:
-        # Start both servers
-        backend_process.start()
-        frontend_process.start()
-        
-        # Wait for processes
-        backend_process.join()
-        frontend_process.join()
-    except KeyboardInterrupt:
-        click.echo("\n\n🛑 Shutting down servers...")
-        backend_process.terminate()
-        frontend_process.terminate()
-        backend_process.join(timeout=5)
-        frontend_process.join(timeout=5)
-        click.echo("✅ Servers stopped")
+    # Start both servers
+    backend_process.start()
+    frontend_process.start()
+    
+    # Wait for processes
+    backend_process.join()
+    frontend_process.join()
 
 @cli.command()
 def build():
