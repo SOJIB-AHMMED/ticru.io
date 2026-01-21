@@ -12,9 +12,12 @@ cd ticru.io
 # Run the setup script
 ./setup-local.sh
 
-# Start development servers
-npm run dev                    # Frontend (port 5173)
-python3 ticru-cli.py serve    # Backend API (port 8000)
+# Start both frontend and backend servers
+python3 ticru-cli.py run        # Starts both servers concurrently
+
+# OR start servers separately
+npm run dev                     # Frontend (port 5173)
+python3 ticru-cli.py serve     # Backend API (port 8000)
 ```
 
 ## 📁 Project Structure
@@ -82,6 +85,10 @@ ticru.io/
 ## 🔧 Development
 
 ```bash
+# Start both frontend and backend servers
+python3 ticru-cli.py run
+
+# OR start servers separately:
 # Frontend development
 npm run dev
 npm run build

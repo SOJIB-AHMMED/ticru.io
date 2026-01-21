@@ -23,15 +23,19 @@ pip install -r requirements.txt
 ### Development
 
 ```bash
-# Start development server (port 5173)
+# Start both frontend and backend servers concurrently (recommended)
+python3 ticru-cli.py run
+python3 ticru-cli.py run --frontend-port 3000 --backend-port 8080
+
+# Start development server only (port 5173)
 python3 ticru-cli.py dev
 python3 ticru-cli.py dev --port 3000
 
-# Start API server (port 8000)
+# Start API server only (port 8000)
 python3 ticru-cli.py serve
 python3 ticru-cli.py serve --port 8080 --host 0.0.0.0
 
-# Start both servers
+# Start both servers manually (alternative)
 npm run dev & python3 ticru-cli.py serve
 ```
 
@@ -169,10 +173,14 @@ python3 ticru-cli.py dev
 ### Daily Development Workflow
 
 ```bash
-# Start development server
+# Start both frontend and backend servers (single command)
+python3 ticru-cli.py run
+
+# OR start servers separately in different terminals:
+# Terminal 1: Start development server
 npm run dev
 
-# In another terminal, start API server
+# Terminal 2: Start API server
 python3 ticru-cli.py serve
 
 # Make changes, then lint before committing

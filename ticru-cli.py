@@ -8,7 +8,9 @@ import click
 import subprocess
 import os
 import sys
+import signal
 from pathlib import Path
+from multiprocessing import Process
 
 @click.group()
 @click.version_option(version='1.0.0')
@@ -36,6 +38,66 @@ def dev(port):
     """Start the development server"""
     click.echo(f"🔧 Starting development server on port {port}")
     subprocess.run(['npm', 'run', 'dev', '--', '--port', str(port)])
+
+@cli.command()
+@click.option('--frontend-port', default=5173, help='Port for the frontend dev server')
+@click.option('--backend-port', default=8000, help='Port for the backend API server')
+@click.option('--backend-host', default='0.0.0.0', help='Host for the backend server')
+def run(frontend_port, backend_port, backend_host):
+    """Start both frontend and backend servers concurrently"""
+    click.echo("🚀 Starting Ticru.io Application")
+    click.echo("="*60)
+    click.echo(f"  Frontend Dev Server: http://localhost:{frontend_port}")
+    click.echo(f"  Backend API Server:  http://{backend_host}:{backend_port}")
+    click.echo("="*60)
+    click.echo("\nPress Ctrl+C to stop both servers\n")
+    
+    # Start backend server
+    def start_backend():
+        subprocess.run([
+            'uvicorn',
+            'api-server:app',
+            '--host', backend_host,
+            '--port', str(backend_port),
+            '--reload'
+        ])
+    
+    # Start frontend server
+    def start_frontend():
+        subprocess.run(['npm', 'run', 'dev', '--', '--port', str(frontend_port)])
+    
+    # Create processes
+    backend_process = Process(target=start_backend)
+    frontend_process = Process(target=start_frontend)
+    
+    # Handle graceful shutdown
+    def signal_handler(sig, frame):
+        click.echo("\n\n🛑 Shutting down servers...")
+        backend_process.terminate()
+        frontend_process.terminate()
+        backend_process.join(timeout=5)
+        frontend_process.join(timeout=5)
+        click.echo("✅ Servers stopped")
+        sys.exit(0)
+    
+    signal.signal(signal.SIGINT, signal_handler)
+    signal.signal(signal.SIGTERM, signal_handler)
+    
+    try:
+        # Start both servers
+        backend_process.start()
+        frontend_process.start()
+        
+        # Wait for processes
+        backend_process.join()
+        frontend_process.join()
+    except KeyboardInterrupt:
+        click.echo("\n\n🛑 Shutting down servers...")
+        backend_process.terminate()
+        frontend_process.terminate()
+        backend_process.join(timeout=5)
+        frontend_process.join(timeout=5)
+        click.echo("✅ Servers stopped")
 
 @cli.command()
 def build():
