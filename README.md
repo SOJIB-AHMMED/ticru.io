@@ -151,3 +151,146 @@ Contributions welcome! Please read the documentation before submitting PRs.
 
 - GitHub Issues: https://github.com/SOJIB-AHMMED/ticru.io/issues
 - Documentation: See docs/ folder
+
+## 🕐 Digital Clock
+
+Ticru.io includes a lightweight, timezone-aware digital clock feature that can be used in both static HTML pages and React applications.
+
+### Features
+
+- ⏰ Real-time updates every second
+- 🌍 Timezone-aware using `Intl.DateTimeFormat`
+- 🎨 Responsive and customizable styling
+- ♿ Accessible with ARIA live regions
+- 📦 Zero dependencies
+- 🔧 Works in all modern browsers
+
+### JavaScript Widget (Static HTML)
+
+The digital clock widget can be easily integrated into any HTML page:
+
+#### Basic Usage
+
+```html
+<!-- Include the script -->
+<script src="digital-clock.js"></script>
+
+<!-- Add a container -->
+<div id="digital-clock"></div>
+
+<!-- Initialize with default timezones -->
+<script>
+  TicruDigitalClock.init('digital-clock');
+</script>
+```
+
+#### Custom Timezones
+
+```html
+<script>
+  // Initialize with custom timezones
+  TicruDigitalClock.init('digital-clock', [
+    'UTC',
+    'America/Los_Angeles',
+    'Europe/Paris',
+    'Asia/Dubai'
+  ]);
+</script>
+```
+
+#### Default Timezones
+
+The widget includes these default timezones:
+- UTC
+- America/New_York
+- Europe/London
+- Asia/Tokyo
+
+#### API Reference
+
+```javascript
+// Initialize the clock
+TicruDigitalClock.init(containerId, timezones)
+
+// Stop and remove the clock
+TicruDigitalClock.destroy(containerId)
+
+// Access default timezones
+TicruDigitalClock.DEFAULT_TIMEZONES
+```
+
+### React Component (TypeScript)
+
+For React applications, use the TypeScript component:
+
+#### Installation
+
+The component is located at `src/DigitalClock.tsx`.
+
+#### Basic Usage
+
+```tsx
+import DigitalClock from './DigitalClock';
+
+function App() {
+  return (
+    <div>
+      <h1>My App</h1>
+      <DigitalClock />
+    </div>
+  );
+}
+```
+
+#### Custom Timezones
+
+```tsx
+<DigitalClock 
+  zones={['UTC', 'America/Los_Angeles', 'Asia/Dubai']} 
+/>
+```
+
+#### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| zones | string[] | DEFAULT_TIMEZONES | Array of IANA timezone names |
+
+### Styling
+
+The digital clock uses CSS classes that can be customized:
+
+- `.digital-clock-container` - Main container
+- `.zone` - Individual timezone card
+- `.zone-label` - Timezone name label
+- `.time` - Time display
+- `.date` - Date display
+
+The default styles use CSS variables from `styles.css` for colors and spacing.
+
+### Testing
+
+A standalone test page is available for quick browser testing:
+
+```bash
+# Open in browser
+open digital-clock-quicktest.html
+```
+
+The test page demonstrates:
+- Default timezone display
+- Automatic updates
+- Responsive layout
+- Accessibility features
+
+### Browser Support
+
+The digital clock requires:
+- ES6+ JavaScript support
+- `Intl.DateTimeFormat` API (available in all modern browsers)
+- CSS Grid and Flexbox support
+
+### Timezone Names
+
+Use valid IANA timezone names (e.g., `America/New_York`, `Europe/London`, `Asia/Tokyo`). 
+Invalid timezones will be logged to console and skipped gracefully.
