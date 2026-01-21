@@ -37,8 +37,12 @@ const DigitalClock: React.FC<DigitalClockProps> = ({ timeZones }) => {
 
       const timeString = formatter.format(currentTime);
       
+      // Format timezone name to be more user-friendly
+      // e.g., "America/New_York" -> "New York"
+      const zoneName = timeZone.split('/').pop()?.replace(/_/g, ' ') || timeZone;
+      
       return {
-        zoneName: timeZone,
+        zoneName,
         timeString,
       };
     } catch (error) {
