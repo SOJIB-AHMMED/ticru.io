@@ -207,9 +207,10 @@ function generateBuildInfo() {
   }
   
   if (existsSync('dist')) {
-    const fs = require('fs');
-    fs.writeFileSync('dist/build-info.json', JSON.stringify(buildInfo, null, 2));
-    printSuccess('Build info generated: dist/build-info.json');
+    import('fs').then(fs => {
+      fs.writeFileSync('dist/build-info.json', JSON.stringify(buildInfo, null, 2));
+      printSuccess('Build info generated: dist/build-info.json');
+    });
   }
   
   return true;

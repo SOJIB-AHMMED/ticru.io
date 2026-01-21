@@ -272,4 +272,9 @@ const start = async () => {
   }
 };
 
-start();
+// Only start server if this is the main module
+if (import.meta.url === `file://${process.argv[1]}`) {
+  start();
+}
+
+export default app;

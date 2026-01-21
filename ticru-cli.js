@@ -335,6 +335,10 @@ program
   .command('status')
   .description('Show application status')
   .action(async () => {
+    const apiHost = process.env.HOST || 'localhost';
+    const apiPort = process.env.PORT || '8000';
+    const devPort = process.env.DEV_PORT || '5173';
+    
     console.log('📊 Ticru.io Status');
     console.log('='.repeat(50));
     
@@ -342,27 +346,27 @@ program
     
     // Check API server
     try {
-      const response = await fetch('http://localhost:8000/api/health', {
+      const response = await fetch(`http://${apiHost}:${apiPort}/api/health`, {
         signal: AbortSignal.timeout(2000),
       });
       
       if (response.ok) {
-        console.log('  API Server: ✅ Running (port 8000)');
+        console.log(`  API Server: ✅ Running (port ${apiPort})`);
       } else {
         console.log('  API Server: ⚠️  Unhealthy');
       }
     } catch (err) {
-      console.log('  API Server: ❌ Not running');
+      console.log(`  API Server: ❌ Not running`);
     }
     
     // Check dev server
     try {
-      const response = await fetch('http://localhost:5173', {
+      const response = await fetch(`http://localhost:${devPort}`, {
         signal: AbortSignal.timeout(2000),
       });
       
       if (response.ok) {
-        console.log('  Dev Server: ✅ Running (port 5173)');
+        console.log(`  Dev Server: ✅ Running (port ${devPort})`);
       } else {
         console.log('  Dev Server: ⚠️  Unhealthy');
       }
