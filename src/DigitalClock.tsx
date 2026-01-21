@@ -138,12 +138,16 @@ const DigitalClock: React.FC<DigitalClockProps> = ({ zones = DEFAULT_TIMEZONES }
             return valid;
         });
 
+        // Use defaults if no valid timezones
+        const finalZones = validZones.length === 0 
+            ? [...DEFAULT_TIMEZONES] 
+            : validZones;
+        
         if (validZones.length === 0) {
             console.error('No valid timezones provided, using defaults');
-            validZones.push(...DEFAULT_TIMEZONES);
         }
 
-        const data = validZones.map(timezone => ({
+        const data = finalZones.map(timezone => ({
             timezone,
             label: formatTimezoneLabel(timezone),
             time: getFormattedTime(timezone),
@@ -164,7 +168,8 @@ const DigitalClock: React.FC<DigitalClockProps> = ({ zones = DEFAULT_TIMEZONES }
         return () => {
             clearInterval(intervalId);
         };
-    }, [zones]); // Re-run effect if zones prop changes
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [zones.join(',')]); // Re-run effect if zones content changes
 
     return (
         <div 

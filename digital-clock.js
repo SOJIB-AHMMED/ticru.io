@@ -110,12 +110,16 @@
             return valid;
         });
 
+        // Use defaults if no valid timezones
+        const finalTimezones = validTimezones.length === 0 
+            ? [...DEFAULT_TIMEZONES] 
+            : validTimezones;
+        
         if (validTimezones.length === 0) {
             console.error('No valid timezones provided, using defaults');
-            validTimezones.push(...DEFAULT_TIMEZONES);
         }
 
-        const zonesHTML = validTimezones.map(timezone => {
+        const zonesHTML = finalTimezones.map(timezone => {
             const label = formatTimezoneLabel(timezone);
             const time = getFormattedTime(timezone);
             const date = getFormattedDate(timezone);

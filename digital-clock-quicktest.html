@@ -74,10 +74,11 @@
 
         /* Digital Clock Styles (inline for testing) */
         .digital-clock-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            display: flex;
+            flex-wrap: wrap;
             gap: 20px;
             margin-top: 20px;
+            justify-content: center;
         }
 
         .zone {
@@ -86,6 +87,7 @@
             padding: 20px;
             border-radius: 8px;
             text-align: center;
+            min-width: 200px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
@@ -135,7 +137,13 @@
             }
 
             .digital-clock-container {
-                grid-template-columns: 1fr;
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .zone {
+                width: 100%;
+                max-width: 280px;
             }
         }
     </style>
