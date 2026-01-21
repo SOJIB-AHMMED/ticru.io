@@ -3,7 +3,7 @@
  * Display current time in multiple time zones with automatic updates
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 
 interface DigitalClockProps {
   timeZones?: string[];
@@ -20,26 +20,31 @@ const DigitalClock: React.FC<DigitalClockProps> = ({
 }) => {
   const [timeData, setTimeData] = useState<TimeZoneDisplay[]>([]);
 
+  // Memoize formatters to avoid recreating them on every update
+  const formatters = useMemo(() => {
+    return timeZones.map(zone => ({
+      zone,
+      timeFormatter: new Intl.DateTimeFormat('en-US', {
+        timeZone: zone,
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+      }),
+      dateFormatter: new Intl.DateTimeFormat('en-US', {
+        timeZone: zone,
+        weekday: 'short',
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      })
+    }));
+  }, [timeZones]);
+
   useEffect(() => {
     const updateTime = () => {
       const now = new Date();
-      const updatedTimeData = timeZones.map(zone => {
-        const timeFormatter = new Intl.DateTimeFormat('en-US', {
-          timeZone: zone,
-          hour: '2-digit',
-          minute: '2-digit',
-          second: '2-digit',
-          hour12: false
-        });
-
-        const dateFormatter = new Intl.DateTimeFormat('en-US', {
-          timeZone: zone,
-          weekday: 'short',
-          year: 'numeric',
-          month: 'short',
-          day: 'numeric'
-        });
-
+      const updatedTimeData = formatters.map(({ zone, timeFormatter, dateFormatter }) => {
         return {
           zone,
           time: timeFormatter.format(now),
@@ -58,7 +63,7 @@ const DigitalClock: React.FC<DigitalClockProps> = ({
 
     // Cleanup
     return () => clearInterval(interval);
-  }, [timeZones]);
+  }, [formatters]);
 
   const formatZoneName = (zone: string): string => {
     return zone.replace(/_/g, ' ').replace('/', ' / ');
@@ -116,9 +121,9 @@ const DigitalClock: React.FC<DigitalClockProps> = ({
 
   return (
     <div style={styles.container}>
-      {timeData.map((data, index) => (
+      {timeData.map((data) => (
         <div
-          key={index}
+          key={data.zone}
           style={styles.clockCard}
           onMouseEnter={(e) => {
             const target = e.currentTarget as HTMLDivElement;
