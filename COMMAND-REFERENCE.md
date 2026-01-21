@@ -8,78 +8,75 @@ Quick reference guide for all Ticru.io commands and scripts.
 
 ```bash
 # Complete setup wizard
-python3 ticru-cli.py setup
+node ticru-cli.js setup
 
 # Install all dependencies
-python3 ticru-cli.py install
+node ticru-cli.js install
 
 # Install npm dependencies only
 npm install
-
-# Install Python dependencies only
-pip install -r requirements.txt
 ```
 
 ### Development
 
 ```bash
 # Start both frontend and backend servers concurrently (recommended)
-python3 ticru-cli.py run
-python3 ticru-cli.py run --frontend-port 3000 --backend-port 8080
+node ticru-cli.js run
+node ticru-cli.js run --frontend-port 3000 --backend-port 8080
 
 # Start development server only (port 5173)
-python3 ticru-cli.py dev
-python3 ticru-cli.py dev --port 3000
+node ticru-cli.js dev
+node ticru-cli.js dev --port 3000
 
 # Start API server only (port 8000)
-python3 ticru-cli.py serve
-python3 ticru-cli.py serve --port 8080 --host 0.0.0.0
+node ticru-cli.js serve
+node ticru-cli.js serve --port 8080 --host 0.0.0.0
+npm run api:dev
 
 # Start both servers manually (alternative)
-npm run dev & python3 ticru-cli.py serve
+npm run dev & npm run api:dev
 ```
 
 ### Building
 
 ```bash
 # Build for production
-python3 ticru-cli.py build
+node ticru-cli.js build
 npm run build
 
 # Build with custom build system
-python3 build-system.py --all
+node build-system.js --all
 
 # Build individual steps
-python3 build-system.py --clean
-python3 build-system.py --install
-python3 build-system.py --lint
-python3 build-system.py --type-check
-python3 build-system.py --build
+node build-system.js --clean
+node build-system.js --install
+node build-system.js --lint
+node build-system.js --type-check
+node build-system.js --build
 ```
 
 ### Testing & Quality
 
 ```bash
 # Run linting
-python3 ticru-cli.py lint
+node ticru-cli.js lint
 npm run lint
 
 # Type checking
 npm run type-check
 
 # Run tests
-python3 ticru-cli.py test
-npm test
+node ticru-cli.js test
 ```
 
 ### Database
 
 ```bash
 # Initialize database
-python3 ticru-cli.py init-db
+node ticru-cli.js init-db
 
 # Initialize with custom SQL file
-python3 ticru-cli.py init-db --sql-file custom-schema.sql
+node ticru-cli.js init-db --sql-file custom-schema.sql
 
 # Direct PostgreSQL access
 psql postgresql://localhost/ticru_db -f BUILD-DATABASE.sql
@@ -89,11 +86,11 @@ psql postgresql://localhost/ticru_db -f BUILD-DATABASE.sql
 
 ```bash
 # Deploy to Vercel
-python3 ticru-cli.py deploy --platform vercel
+node ticru-cli.js deploy --platform vercel
 ./deploy-vercel.sh
 
 # Deploy to Netlify
-python3 ticru-cli.py deploy --platform netlify
+node ticru-cli.js deploy --platform netlify
 netlify deploy --prod
 
 # Manual Vercel deployment
@@ -107,15 +104,14 @@ netlify deploy --prod --dir=dist
 
 ```bash
 # Clean build artifacts
-python3 ticru-cli.py clean
-npm run clean
+node ticru-cli.js clean
 
 # Check application status
-python3 ticru-cli.py status
+node ticru-cli.js status
 
 # View CLI help
-python3 ticru-cli.py --help
-python3 ticru-cli.py <command> --help
+node ticru-cli.js --help
+node ticru-cli.js <command> --help
 ```
 
 ## NPM Scripts
@@ -135,6 +131,18 @@ npm run lint
 
 # Type checking
 npm run type-check
+
+# API server (development with hot reload)
+npm run api:dev
+
+# API server (production)
+npm run api:start
+
+# Run CLI tool
+npm run cli <command>
+
+# Run build system
+npm run build:system
 ```
 
 ## Environment Variables
@@ -150,6 +158,9 @@ Required variables:
 - `VITE_API_URL` - API endpoint URL
 - `DATABASE_URL` - PostgreSQL connection string
 - `NODE_ENV` - Environment (development/production)
+- `HOST` - API server host (default: 0.0.0.0)
+- `PORT` - API server port (default: 8000)
+- `LOG_LEVEL` - Logging level (default: info)
 
 ## Quick Start Guide
 
@@ -161,27 +172,27 @@ git clone https://github.com/SOJIB-AHMMED/ticru.io.git
 cd ticru.io
 
 # 2. Run setup wizard
-python3 ticru-cli.py setup
+node ticru-cli.js setup
 
 # 3. Initialize database (optional)
-python3 ticru-cli.py init-db
+node ticru-cli.js init-db
 
 # 4. Start development
-python3 ticru-cli.py dev
+node ticru-cli.js run
 ```
 
 ### Daily Development Workflow
 
 ```bash
 # Start both frontend and backend servers (single command)
-python3 ticru-cli.py run
+node ticru-cli.js run
 
 # OR start servers separately in different terminals:
 # Terminal 1: Start development server
 npm run dev
 
 # Terminal 2: Start API server
-python3 ticru-cli.py serve
+npm run api:dev
 
 # Make changes, then lint before committing
 npm run lint
@@ -192,10 +203,10 @@ npm run type-check
 
 ```bash
 # Build the application
-python3 ticru-cli.py build
+node ticru-cli.js build
 
 # Deploy to Vercel
-python3 ticru-cli.py deploy --platform vercel
+node ticru-cli.js deploy --platform vercel
 ```
 
 ## API Server Endpoints
@@ -226,7 +237,7 @@ POST /api/sentiment
 
 ## Build System Options
 
-The `build-system.py` supports multiple flags:
+The `build-system.js` supports multiple flags:
 
 - `--clean` - Remove build artifacts
 - `--install` - Install dependencies
@@ -253,16 +264,13 @@ kill -9 <PID>
 # Clear and reinstall
 rm -rf node_modules package-lock.json
 npm install
-
-# Python dependencies
-pip install -r requirements.txt --force-reinstall
 ```
 
 ### Build fails
 ```bash
 # Clean and rebuild
-python3 ticru-cli.py clean
-python3 ticru-cli.py build
+node ticru-cli.js clean
+node ticru-cli.js build
 ```
 
 ## Support

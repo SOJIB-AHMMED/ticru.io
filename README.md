@@ -1,6 +1,6 @@
 # ticru.io
 
-Modern full-stack web application with TypeScript, React, Python FastAPI backend, and PostgreSQL database.
+Modern full-stack web application with TypeScript, React, Node.js Fastify backend, and PostgreSQL database.
 
 ## 🚀 Quick Start
 
@@ -13,11 +13,11 @@ cd ticru.io
 ./setup-local.sh
 
 # Start both frontend and backend servers
-python3 ticru-cli.py run        # Starts both servers concurrently
+node ticru-cli.js run        # Starts both servers concurrently
 
 # OR start servers separately
-npm run dev                     # Frontend (port 5173)
-python3 ticru-cli.py serve     # Backend API (port 8000)
+npm run dev                  # Frontend (port 5173)
+npm run api:dev              # Backend API (port 8000)
 ```
 
 ## 📁 Project Structure
@@ -31,6 +31,9 @@ ticru.io/
 │   ├── integration-marketplace.tsx
 │   ├── multi-mode-agent.ts
 │   └── role-play-simulator.ts
+├── api/                      # Node.js Fastify API server
+│   ├── server.ts            # Main API server
+│   └── index.ts             # Vercel serverless function
 ├── docs/                     # Documentation
 │   ├── DEPLOY-TICRU-IO.md
 │   ├── TICRU-PRODUCTION-GUIDE.pdf
@@ -38,17 +41,15 @@ ticru.io/
 ├── index.html               # Main HTML entry point
 ├── styles.css               # Application styles
 ├── app.js                   # Client-side JavaScript
-├── api-server.py           # FastAPI backend server
+├── ticru-cli.js            # CLI tool (Node.js)
+├── build-system.js         # Build automation (Node.js)
 ├── BUILD-DATABASE.sql      # PostgreSQL schema
-├── build-system.py         # Build automation
-├── ticru-cli.py           # CLI tool
-├── deploy-vercel.sh       # Deployment script
-├── setup-local.sh         # Local setup script
-├── package.json           # npm dependencies
-├── tsconfig.json          # TypeScript config
-├── vercel.json            # Vercel deployment config
-├── requirements.txt       # Python dependencies
-├── COMMAND-REFERENCE.md   # CLI commands reference
+├── deploy-vercel.sh        # Deployment script
+├── setup-local.sh          # Local setup script
+├── package.json            # npm dependencies
+├── tsconfig.json           # TypeScript config
+├── vercel.json             # Vercel deployment config
+├── COMMAND-REFERENCE.md    # CLI commands reference
 └── PRODUCTION-DEPLOYMENT-GUIDE.md
 ```
 
@@ -62,16 +63,16 @@ ticru.io/
 - ⚛️ React components
 
 ### Backend
-- 🚀 FastAPI REST API
-- 🗄️ PostgreSQL database
-- 🔐 Secure authentication
+- 🚀 Fastify REST API (Node.js)
+- 🗄️ PostgreSQL database support
+- 🔐 Request validation with Zod schemas
 - 📊 Sentiment analysis
 - 🤖 AI agent with multiple modes
 - 📈 Campaign management
+- ⚡ CORS enabled for frontend origins
 
 ### Deployment
 - ☁️ Vercel/Netlify ready
-- 🐳 Docker support
 - 📦 Automated build system
 - 🔄 CI/CD pipeline
 - 📝 Comprehensive documentation
@@ -86,7 +87,7 @@ ticru.io/
 
 ```bash
 # Start both frontend and backend servers
-python3 ticru-cli.py run
+node ticru-cli.js run
 
 # OR start servers separately:
 # Frontend development
@@ -97,11 +98,11 @@ npm run lint
 npm run type-check
 
 # Backend development
-python3 ticru-cli.py serve
-python3 ticru-cli.py dev
+npm run api:dev              # Start API server with hot reload
+node ticru-cli.js serve      # Alternative API start command
 
 # Build & deploy
-python3 build-system.py --all
+node build-system.js --all
 ./deploy-vercel.sh
 ```
 
@@ -109,7 +110,7 @@ python3 build-system.py --all
 
 ```bash
 # Initialize database
-python3 ticru-cli.py init-db
+node ticru-cli.js init-db
 
 # Direct PostgreSQL
 psql $DATABASE_URL -f BUILD-DATABASE.sql
@@ -135,8 +136,9 @@ npm run lint
 # Type checking
 npm run type-check
 
-# Tests
-python3 ticru-cli.py test
+# API server testing
+# Start the server and test endpoints:
+curl http://localhost:8000/api/health
 ```
 
 ## 📄 License
