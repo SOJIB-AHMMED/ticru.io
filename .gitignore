@@ -61,3 +61,8 @@ temp/
 *.db
 *.sqlite
 *.sqlite3
+
+# Demo files
+demo.html
+src/demo.tsx
+package-lock.json
