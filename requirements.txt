@@ -1,3 +1,10 @@
+# DEPRECATED: This file is no longer used
+# The project has been migrated to Node.js/TypeScript
+# All dependencies are now managed through package.json
+# 
+# This file is kept for reference only
+# 
+# Previous Python dependencies (FastAPI backend):
 fastapi==0.109.2
 uvicorn[standard]==0.24.0
 pydantic==2.5.0

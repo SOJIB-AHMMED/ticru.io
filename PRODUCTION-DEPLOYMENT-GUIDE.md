@@ -18,7 +18,6 @@ Comprehensive guide for deploying Ticru.io to production environments.
 ### Required Software
 
 - **Node.js** 18+ 
-- **Python** 3.9+
 - **PostgreSQL** 14+
 - **Git**
 - **Vercel CLI** or **Netlify CLI**
@@ -43,9 +42,6 @@ cd ticru.io
 ```bash
 # Install npm dependencies
 npm install
-
-# Install Python dependencies
-pip install -r requirements.txt
 ```
 
 ### 3. Configure Environment Variables
@@ -60,8 +56,9 @@ NODE_ENV=production
 
 # API Configuration
 VITE_API_URL=https://api.ticru.io
-API_HOST=0.0.0.0
-API_PORT=8000
+PORT=8000
+HOST=0.0.0.0
+LOG_LEVEL=info
 
 # Database
 DATABASE_URL=postgresql://user:password@host:5432/ticru_db
@@ -71,7 +68,7 @@ SECRET_KEY=your-secret-key-here
 JWT_SECRET=your-jwt-secret-here
 ALLOWED_ORIGINS=https://ticru.io,https://www.ticru.io
 
-# Third-party Services
+# Third-party Services (if needed)
 STRIPE_API_KEY=sk_live_...
 MAILCHIMP_API_KEY=...
 GOOGLE_ANALYTICS_ID=...
@@ -91,7 +88,7 @@ CREATE DATABASE ticru_db;
 
 ```bash
 # Using CLI
-python3 ticru-cli.py init-db
+npm run cli init-db
 
 # Or directly with psql
 psql $DATABASE_URL -f BUILD-DATABASE.sql
@@ -179,17 +176,31 @@ netlify deploy --prod --dir=dist
 
 ## Backend Deployment
 
-### Option 1: Vercel Serverless Functions
+### Option 1: Vercel Serverless Functions (Recommended)
 
-Create `api/index.py`:
+The Fastify API is configured for Vercel serverless deployment via `vercel.json`.
 
-```python
-from api-server import app
+#### Deploy via GitHub Integration:
 
-# Vercel serverless function handler
-def handler(request):
-    return app(request)
+1. Connect your GitHub repository to Vercel
+2. Vercel will automatically detect the configuration
+3. Environment variables can be set in Vercel dashboard
+4. Push to main branch triggers automatic deployment
+
+#### Deploy via CLI:
+
+```bash
+# Install Vercel CLI
+npm install -g vercel
+
+# Login
+vercel login
+
+# Deploy
+vercel --prod
 ```
+
+The `api/index.ts` file will be deployed as a serverless function automatically.
 
 ### Option 2: Dedicated Server (e.g., DigitalOcean, AWS EC2)
 
@@ -202,18 +213,41 @@ ssh user@your-server-ip
 # Update system
 sudo apt update && sudo apt upgrade -y
 
-# Install dependencies
-sudo apt install python3-pip postgresql nginx -y
+# Install Node.js 18+
+curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+sudo apt install -y nodejs
+
+# Install PostgreSQL and nginx
+sudo apt install postgresql nginx -y
 
 # Clone repository
 git clone https://github.com/SOJIB-AHMMED/ticru.io.git
 cd ticru.io
 
-# Install Python dependencies
-pip3 install -r requirements.txt
+# Install dependencies
+npm install
+
+# Build API server
+npm run build:api
 ```
 
-#### 2. Configure Systemd Service
+#### 2. Configure PM2 Process Manager
+
+```bash
+# Install PM2
+npm install -g pm2
+
+# Start API server
+pm2 start npm --name "ticru-api" -- run start:api
+
+# Save PM2 configuration
+pm2 save
+
+# Setup PM2 to start on boot
+pm2 startup
+```
+
+#### 3. Configure Systemd Service (Alternative to PM2)
 
 Create `/etc/systemd/system/ticru-api.service`:
 
@@ -226,8 +260,10 @@ After=network.target
 Type=simple
 User=www-data
 WorkingDirectory=/var/www/ticru.io
-Environment="PATH=/usr/local/bin"
-ExecStart=/usr/bin/python3 api-server.py
+Environment="PATH=/usr/local/bin:/usr/bin"
+Environment="NODE_ENV=production"
+Environment="PORT=8000"
+ExecStart=/usr/bin/node api/index.js
 Restart=always
 
 [Install]
@@ -242,7 +278,7 @@ sudo systemctl start ticru-api
 sudo systemctl status ticru-api
 ```
 
-#### 3. Configure Nginx Reverse Proxy
+#### 4. Configure Nginx Reverse Proxy
 
 Create `/etc/nginx/sites-available/ticru-api`:
 

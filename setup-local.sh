@@ -37,25 +37,6 @@ else
     exit 1
 fi
 
-# Check Python
-if command -v python3 &> /dev/null; then
-    PYTHON_VERSION=$(python3 --version)
-    echo -e "${GREEN}✓ Python: $PYTHON_VERSION${NC}"
-else
-    echo -e "${RED}✗ Python 3 not found${NC}"
-    echo "Please install Python 3.9+ from https://www.python.org/"
-    exit 1
-fi
-
-# Check pip
-if command -v pip3 &> /dev/null; then
-    PIP_VERSION=$(pip3 --version | cut -d' ' -f2)
-    echo -e "${GREEN}✓ pip: v$PIP_VERSION${NC}"
-else
-    echo -e "${RED}✗ pip3 not found${NC}"
-    exit 1
-fi
-
 # Check git
 if command -v git &> /dev/null; then
     GIT_VERSION=$(git --version | cut -d' ' -f3)
@@ -78,14 +59,6 @@ echo "→ Installing npm packages..."
 npm install
 echo -e "${GREEN}✓ npm packages installed${NC}"
 echo ""
-
-if [ -f "requirements.txt" ]; then
-    echo "→ Installing Python packages..."
-    pip3 install -r requirements.txt
-    echo -e "${GREEN}✓ Python packages installed${NC}"
-else
-    echo -e "${YELLOW}⚠ requirements.txt not found, skipping Python packages${NC}"
-fi
 
 # Setup environment
 echo ""
@@ -119,11 +92,11 @@ echo
 if [[ $REPLY =~ ^[Yy]$ ]]; then
     if command -v psql &> /dev/null; then
         echo "→ Initializing database..."
-        if python3 ticru-cli.py init-db; then
+        if npm run cli init-db; then
             echo -e "${GREEN}✓ Database initialized${NC}"
         else
             echo -e "${YELLOW}⚠ Database initialization failed${NC}"
-            echo "You can run 'python3 ticru-cli.py init-db' later"
+            echo "You can run 'npm run cli init-db' later"
         fi
     else
         echo -e "${YELLOW}⚠ PostgreSQL (psql) not found${NC}"
@@ -142,8 +115,6 @@ echo ""
 
 chmod +x deploy-vercel.sh
 chmod +x setup-local.sh
-chmod +x ticru-cli.py
-chmod +x build-system.py
 echo -e "${GREEN}✓ Scripts are now executable${NC}"
 
 # Final summary
@@ -155,23 +126,25 @@ echo ""
 echo "Next steps:"
 echo ""
 echo "  ${BLUE}Quick Start:${NC}"
-echo "    • python3 ticru-cli.py run    - Start both frontend & backend"
+echo "    • npm run cli run         - Start both frontend & backend"
 echo ""
 echo "  ${BLUE}Development:${NC}"
-echo "    • npm run dev              - Start frontend dev server"
-echo "    • python3 ticru-cli.py serve - Start API server"
+echo "    • npm run dev             - Start frontend dev server"
+echo "    • npm run dev:api         - Start API server"
+echo "    • npm run cli serve       - Start API server (alternative)"
 echo ""
 echo "  ${BLUE}Building:${NC}"
-echo "    • npm run build           - Build for production"
-echo "    • python3 build-system.py - Complete build pipeline"
+echo "    • npm run build           - Build frontend for production"
+echo "    • npm run build:api       - Build API server"
+echo "    • node build-system.ts    - Complete build pipeline"
 echo ""
 echo "  ${BLUE}Deployment:${NC}"
 echo "    • ./deploy-vercel.sh      - Deploy to Vercel"
 echo "    • vercel --prod           - Deploy with Vercel CLI"
 echo ""
 echo "  ${BLUE}Tools:${NC}"
-echo "    • python3 ticru-cli.py --help  - CLI commands"
-echo "    • python3 ticru-cli.py status  - Check app status"
+echo "    • npm run cli -- --help   - CLI commands"
+echo "    • npm run cli status      - Check app status"
 echo ""
 echo "For more information, see:"
 echo "  • COMMAND-REFERENCE.md"
