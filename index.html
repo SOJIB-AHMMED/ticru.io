@@ -6,6 +6,7 @@
     <meta name="description" content="Ticru.io - Modern Web Application">
     <title>Ticru.io</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="digital-clock.js"></script>
 </head>
 <body>
     <div class="container">
@@ -14,6 +15,7 @@
                 <div class="logo">
                     <h1>Ticru.io</h1>
                 </div>
+                <div id="digital-clock"></div>
                 <ul class="nav-links">
                     <li><a href="#home">Home</a></li>
                     <li><a href="#features">Features</a></li>
@@ -85,5 +87,11 @@
     </div>
 
     <script src="app.js"></script>
+    <script>
+        // Initialize digital clock on page load
+        if (window.TicruDigitalClock) {
+            TicruDigitalClock.init('digital-clock');
+        }
+    </script>
 </body>
 </html>
